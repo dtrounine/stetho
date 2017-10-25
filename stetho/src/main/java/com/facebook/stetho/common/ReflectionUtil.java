@@ -44,10 +44,38 @@ public final class ReflectionUtil {
   }
 
   @Nullable
+  public static Method tryGetPublicMethod(Class<?> theClass,
+                                          String methodName,
+                                          Class<?> ... paramTypes) {
+    try {
+      return theClass.getMethod(methodName, paramTypes);
+    } catch (NoSuchMethodException e) {
+      LogUtil.d(
+              e,
+              "Could not retrieve %s method from %s",
+              methodName,
+              theClass);
+
+      return null;
+    }
+  }
+
+  @Nullable
   public static Object getFieldValue(Field field, Object target) {
     try {
       return field.get(target);
     } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Nullable
+  public static Object callMethod(Method method, Object object, Object ... params) {
+    try {
+      return method.invoke(object, params);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    } catch (InvocationTargetException e) {
       throw new RuntimeException(e);
     }
   }
